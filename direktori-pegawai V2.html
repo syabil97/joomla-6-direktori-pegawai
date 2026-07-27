@@ -1,0 +1,571 @@
+<div id="direktori-pegawai-app" class="dp-wrap">
+  <style>
+    .dp-wrap {
+      --dp-blue: #1a5f9e;
+      --dp-blue-light: #3b9ee6;
+      --dp-border: #e2e6ea;
+      --dp-text: #2c3440;
+      --dp-muted: #6b7684;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--dp-text);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px;
+    }
+
+    .dp-title {
+      text-align: center;
+      color: var(--dp-blue-light);
+      font-weight: 600;
+      font-size: 1.5rem;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .dp-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .dp-divider span {
+      height: 2px;
+      width: 70px;
+      background: var(--dp-blue-light);
+    }
+
+    .dp-divider i {
+      width: 8px;
+      height: 8px;
+      border: 2px solid var(--dp-blue-light);
+      border-radius: 2px;
+      transform: rotate(45deg);
+    }
+
+    .dp-body {
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .dp-filters {
+      width: 230px;
+      flex: 0 0 230px;
+    }
+
+    .dp-filters label {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--dp-text);
+      margin: 14px 0 6px;
+    }
+
+    .dp-filters label:first-child {
+      margin-top: 0;
+    }
+
+    .dp-filters input[type="text"],
+    .dp-filters select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--dp-border);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .dp-filters input[type="text"]:focus,
+    .dp-filters select:focus {
+      outline: 2px solid var(--dp-blue-light);
+      outline-offset: 1px;
+    }
+
+    .dp-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .dp-btns button {
+      border: none;
+      border-radius: 4px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .dp-btn-cari {
+      background: var(--dp-blue);
+    }
+
+    .dp-btn-cari:hover {
+      background: #154e83;
+    }
+
+    .dp-btn-reset {
+      background: #20293a;
+    }
+
+    .dp-btn-reset:hover {
+      background: #151c29;
+    }
+
+    .dp-results {
+      flex: 1 1 480px;
+      min-width: 280px;
+      border: 1px solid var(--dp-border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .dp-table-scroll {
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    table.dp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    table.dp-table thead th {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--dp-border);
+      color: var(--dp-text);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    table.dp-table tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--dp-border);
+      vertical-align: top;
+    }
+
+    table.dp-table tbody tr:nth-child(even) {
+      background: #f8fafb;
+    }
+
+    table.dp-table tbody tr:hover {
+      background: #eef5fc;
+    }
+
+    .dp-bahagian {
+      color: var(--dp-blue);
+      font-weight: 600;
+    }
+
+    .dp-empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--dp-muted);
+    }
+
+    .dp-count {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      color: var(--dp-muted);
+      border-top: 1px solid var(--dp-border);
+    }
+
+    .dp-loading,
+    .dp-error {
+      padding: 30px;
+      text-align: center;
+      color: var(--dp-muted);
+    }
+
+    .dp-error {
+      color: #b3261e;
+    }
+
+    @media (max-width: 720px) {
+      .dp-filters {
+        width: 100%;
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+
+  <div class="dp-body">
+    <div class="dp-filters">
+      <label for="dp-search">Carian</label>
+      <input type="text" id="dp-search" placeholder="Cari nama..." />
+
+      <label for="dp-bahagian">Bahagian</label>
+      <select id="dp-bahagian">
+        <option value="">- Sila Pilih -</option>
+      </select>
+
+      <label for="dp-unit">Pejabat/Seksyen/Unit</label>
+      <select id="dp-unit">
+        <option value="">- Semua -</option>
+      </select>
+
+      <div class="dp-btns">
+        <button class="dp-btn-cari" id="dp-cari">Cari</button>
+        <button class="dp-btn-reset" id="dp-reset">Semula</button>
+      </div>
+    </div>
+
+    <div class="dp-results">
+      <div class="dp-table-scroll">
+        <table class="dp-table">
+          <thead>
+            <tr>
+              <th>Pejabat/Seksyen/Unit</th>
+              <th>Nama</th>
+              <th>Jawatan</th>
+              <th>Tel/Sambungan</th>
+              <th>E-mel</th>
+            </tr>
+          </thead>
+          <tbody id="dp-tbody"></tbody>
+        </table>
+      </div>
+      <div class="dp-count" id="dp-count"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // ================================================================
+    // SUMBER DATA: Google Sheets (satu tab = satu Bahagian).
+    //
+    // CARA DAPATKAN LINK UNTUK SETIAP TAB:
+    // 1. Buka Google Sheets, pastikan setiap tab (Bahagian) ada lajur
+    // header: Unit, Nama, Jawatan, Emel (baris pertama).
+    // 2. File > Share > Publish to web.
+    // 3. Dalam dialog tu, ada dropdown "Entire Document" - tukar kepada
+    // nama tab/Bahagian yang nak publish (bukan Entire Document).
+    // 4. Format pilih "Comma-separated values (.csv)".
+    // 5. Klik Publish, copy link yang keluar (nampak macam:
+    // https://docs.google.com/spreadsheets/d/e/XXXXX/pub?gid=123&single=true&output=csv )
+    // 6. Ulang langkah 3-5 untuk setiap tab/Bahagian lain (pilih tab
+    // lain dalam dropdown tu, klik Publish sekali lagi untuk dapat
+    // link berlainan untuk tab tu).
+    // 7. Masukkan setiap pasangan {bahagian, url} dalam senarai SHEET_TABS
+    // di bawah. Teks "bahagian" ialah label yang akan dipaparkan
+    // dalam dropdown laman web (boleh tulis apa-apa, tak semestinya
+    // sama ejaan dengan nama tab).
+    //
+    // Nak tambah Bahagian baru lepas ni? Buat tab baru dalam Google Sheet,
+    // publish (langkah 3-6), tambah satu baris baru dalam SHEET_TABS.
+    // Nak tambah/tukar staf? Edit terus dalam Google Sheets, automatik
+    // update di laman web (Google refresh cache published CSV dalam
+    // beberapa minit).
+    // ================================================================
+    var SHEET_TABS = [
+      {
+        bahagian: "PENGURUSAN TERTINGGI",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "PENGURUSAN",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "KESIHATAN AWAM",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "FARMASI",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "KEJURUTERAAN",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "BAHAGIAN KESELAMATAN & KUALITI ",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "PERGIGIAN",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+      {
+        bahagian: "PERUBATAN",
+        url: "https://docs.google.com/spreadsheets/d/e/XXXXXXX/pub?gid=XXXXXXX&single=true&output=csv",
+      },
+    ];
+    // ================================================================
+
+    var STAFF = [];
+
+    var elBahagian = document.getElementById("dp-bahagian");
+    var elUnit = document.getElementById("dp-unit");
+    var elSearch = document.getElementById("dp-search");
+    var elTbody = document.getElementById("dp-tbody");
+    var elCount = document.getElementById("dp-count");
+
+    function uniqueSorted(arr) {
+      return Array.from(new Set(arr)).sort(function (a, b) {
+        return a.localeCompare(b);
+      });
+    }
+
+    function populateBahagian() {
+      var list = uniqueSorted(
+        STAFF.map(function (s) {
+          return s.bahagian;
+        })
+      );
+      elBahagian.innerHTML = '<option value="">- Sila Pilih -</option>';
+      list.forEach(function (b) {
+        var opt = document.createElement("option");
+        opt.value = b;
+        opt.textContent = b;
+        elBahagian.appendChild(opt);
+      });
+    }
+
+    function populateUnit() {
+      var bVal = elBahagian.value;
+      var source = bVal
+        ? STAFF.filter(function (s) {
+            return s.bahagian === bVal;
+          })
+        : STAFF;
+      var list = uniqueSorted(
+        source.map(function (s) {
+          return s.unit;
+        })
+      );
+      elUnit.innerHTML = '<option value="">- Semua -</option>';
+      list.forEach(function (u) {
+        var opt = document.createElement("option");
+        opt.value = u;
+        opt.textContent = u;
+        elUnit.appendChild(opt);
+      });
+    }
+
+    function render() {
+      var q = elSearch.value.trim().toLowerCase();
+      var bVal = elBahagian.value;
+      var uVal = elUnit.value;
+
+      var rows = STAFF.filter(function (s) {
+        if (bVal && s.bahagian !== bVal) return false;
+        if (uVal && s.unit !== uVal) return false;
+        if (q && s.nama.toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      });
+
+      if (rows.length === 0) {
+        elTbody.innerHTML =
+          '<tr><td colspan="4" class="dp-empty">Tiada rekod dijumpai.</td></tr>';
+      } else {
+        elTbody.innerHTML = rows
+          .map(function (s) {
+            return (
+              "<tr>" +
+              '<td class="dp-bahagian">' +
+              escapeHtml(s.bahagian) +
+              '<br><span style="color:var(--dp-muted);font-weight:400">' +
+              escapeHtml(s.unit) +
+              "</span></td>" +
+              "<td>" +
+              escapeHtml(s.nama) +
+              "</td>" +
+              "<td>" +
+              escapeHtml(s.jawatan) +
+              "</td>" +
+              "<td>" +
+              escapeHtml(s.tel) +
+              "</td>" +
+              '<td><a href="mailto:' +
+              escapeHtml(s.emel) +
+              '">' +
+              escapeHtml(s.emel) +
+              "</a></td>" +
+              "</tr>"
+            );
+          })
+          .join("");
+      }
+      elCount.textContent = rows.length + " rekod dijumpai";
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[c];
+      });
+    }
+
+    elBahagian.addEventListener("change", function () {
+      populateUnit();
+      render();
+    });
+    elUnit.addEventListener("change", render);
+    document.getElementById("dp-cari").addEventListener("click", render);
+    document.getElementById("dp-reset").addEventListener("click", function () {
+      elSearch.value = "";
+      elBahagian.value = "";
+      populateUnit();
+      render();
+    });
+    elSearch.addEventListener("keyup", function (e) {
+      if (e.key === "Enter") render();
+    });
+
+    // ---- Parser CSV ringkas (sokong nilai bertanda petik "..." yang ada koma dalamnya) ----
+    function parseCsv(text) {
+      var rows = [];
+      var row = [];
+      var field = "";
+      var inQuotes = false;
+      text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      for (var i = 0; i < text.length; i++) {
+        var c = text[i];
+        if (inQuotes) {
+          if (c === '"') {
+            if (text[i + 1] === '"') {
+              field += '"';
+              i++;
+            } else {
+              inQuotes = false;
+            }
+          } else {
+            field += c;
+          }
+        } else {
+          if (c === '"') {
+            inQuotes = true;
+          } else if (c === ",") {
+            row.push(field);
+            field = "";
+          } else if (c === "\n") {
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = "";
+          } else {
+            field += c;
+          }
+        }
+      }
+      if (field.length || row.length) {
+        row.push(field);
+        rows.push(row);
+      }
+      return rows.filter(function (r) {
+        return r.length > 1 || (r[0] && r[0].trim() !== "");
+      });
+    }
+
+    function csvToRows(text, bahagianLabel) {
+      var rows = parseCsv(text);
+      if (rows.length < 2) return [];
+      var header = rows[0].map(function (h) {
+        return h.trim().toLowerCase();
+      });
+      var telHeaderIdx = header.findIndex(function (h) {
+        return (
+          h === "tel/sambungan" ||
+          h === "tel" ||
+          h === "sambungan" ||
+          h === "no. tel" ||
+          h === "no telefon"
+        );
+      });
+      var idx = {
+        unit: header.indexOf("unit"),
+        nama: header.indexOf("nama"),
+        jawatan: header.indexOf("jawatan"),
+        tel: telHeaderIdx,
+        emel: header.indexOf("emel"),
+      };
+      var out = [];
+      for (var i = 1; i < rows.length; i++) {
+        var r = rows[i];
+        var nama = (idx.nama !== -1 ? r[idx.nama] : "") || "";
+        nama = nama.trim();
+        if (!nama) continue;
+        out.push({
+          bahagian: bahagianLabel,
+          unit: (idx.unit !== -1 ? r[idx.unit] || "" : "").trim(),
+          nama: nama,
+          jawatan: (idx.jawatan !== -1 ? r[idx.jawatan] || "" : "").trim(),
+          tel: (idx.tel !== -1 ? r[idx.tel] || "" : "").trim(),
+          emel: (idx.emel !== -1 ? r[idx.emel] || "" : "").trim(),
+        });
+      }
+      return out;
+    }
+
+    function showLoading() {
+      elTbody.innerHTML =
+        '<tr><td colspan="4" class="dp-loading">Sedang memuatkan data pegawai...</td></tr>';
+    }
+    function showError(msg) {
+      elTbody.innerHTML =
+        '<tr><td colspan="4" class="dp-error">' +
+        escapeHtml(msg) +
+        "</td></tr>";
+    }
+
+    function loadData() {
+      showLoading();
+      var validTabs = SHEET_TABS.filter(function (t) {
+        return t.url && t.url.indexOf("PASTE_LINK_CSV_TAB_INI_DI_SINI") === -1;
+      });
+      if (validTabs.length === 0) {
+        showError(
+          "Konfigurasi belum lengkap: sila isi link CSV Google Sheets untuk setiap Bahagian dalam SHEET_TABS di dalam kod."
+        );
+        return;
+      }
+      Promise.all(
+        validTabs.map(function (tab) {
+          return fetch(tab.url, { cache: "no-store" })
+            .then(function (res) {
+              if (!res.ok)
+                throw new Error(
+                  "Gagal (" + res.status + ") untuk Bahagian: " + tab.bahagian
+                );
+              return res.text();
+            })
+            .then(function (text) {
+              return csvToRows(text, tab.bahagian);
+            })
+            .catch(function (err) {
+              console.error(err);
+              return []; // tab lain masih diteruskan walaupun satu tab gagal
+            });
+        })
+      ).then(function (results) {
+        STAFF = [].concat.apply([], results);
+        if (STAFF.length === 0) {
+          showError(
+            'Tiada data dijumpai. Semak link Google Sheets sudah "Publish to web" dengan betul dan lajur header (Unit, Nama, Jawatan, Emel) tepat.'
+          );
+          return;
+        }
+        populateBahagian();
+        populateUnit();
+        render();
+      });
+    }
+
+    loadData();
+  })();
+</script>
